@@ -2,6 +2,8 @@
 
 PhysBrainEvalKit is an evaluation toolkit for spatial and embodied-intelligence benchmarks targeting vision-language models (VLMs). This clean release contains the benchmark adapters, a unified Hugging Face inference interface, the point-localization metrics protocol, and a resident-model sharded runner for community reproduction.
 
+This project is based on and extends the open-source [EmbodiedEvalKit](https://github.com/pickxiguapi/EmbodiedEvalKit) framework.
+
 ## 🛠️ Installation
 
 ```bash
@@ -25,6 +27,42 @@ export VLABENCH_DATASET_PATH=/path/to/VLABench/vlm_evaluation_v1.0
 export ROBOREFIT_DATA_ROOT=/path/to/RoboRefit-corrected
 export EGO3DBENCH_IMAGE_ROOT=/path/to/Ego3D-Bench/images
 ```
+
+### Dataset sources
+
+The following public sources correspond to the benchmark plan. Follow each dataset repository's instructions for downloads, authentication, and preprocessing. Hugging Face datasets are cached automatically on first use. Entries marked as a local prepared export require materializing the dataset into the path supplied through the corresponding environment variable.
+
+| Benchmark | Dataset source |
+|---|---|
+| ERQA | [FlagEval/ERQA](https://huggingface.co/datasets/FlagEval/ERQA) |
+| RoboSpatial | [chanhee-luke/RoboSpatial-Home](https://huggingface.co/datasets/chanhee-luke/RoboSpatial-Home) |
+| EgoPlan2 | [IffYuan/ego-plan](https://huggingface.co/datasets/IffYuan/ego-plan) |
+| SAT | [FlagEval/SAT](https://huggingface.co/datasets/FlagEval/SAT) |
+| Where2Place | [FlagEval/Where2Place](https://huggingface.co/datasets/FlagEval/Where2Place) |
+| RefSpatial-Bench | [BAAI/RefSpatial-Bench](https://huggingface.co/datasets/BAAI/RefSpatial-Bench) |
+| Part-Affordance-2K | [IffYuan/Part-Affordance-2K](https://huggingface.co/datasets/IffYuan/Part-Affordance-2K) |
+| ShareRobot-Trajectory | [IffYuan/sharerobot_trajectory](https://huggingface.co/datasets/IffYuan/sharerobot_trajectory) |
+| VABench-Visual-Trace | [IffYuan/vabench-v](https://huggingface.co/datasets/IffYuan/vabench-v) |
+| Q-Spatial-Bench | [andrewliao11/Q-Spatial-Bench](https://huggingface.co/datasets/andrewliao11/Q-Spatial-Bench) |
+| VABench-Point | [IffYuan/VABench-P](https://huggingface.co/datasets/IffYuan/VABench-P) |
+| Pixmo-Points | [IffYuan/pixmo-points-eval](https://huggingface.co/datasets/IffYuan/pixmo-points-eval) |
+| RoboAfford | [Zray26/roboafford-eval](https://huggingface.co/datasets/Zray26/roboafford-eval) |
+| PIOBench | [IffYuan/PIO-Bench](https://huggingface.co/datasets/IffYuan/PIO-Bench) |
+| RoboRefit | [IffYuan/RoboRefit](https://huggingface.co/datasets/IffYuan/RoboRefit) |
+| BLINK | [BLINK-Benchmark/BLINK](https://huggingface.co/datasets/BLINK-Benchmark/BLINK) |
+| CV-Bench | [nyu-visionx/CV-Bench](https://huggingface.co/datasets/nyu-visionx/CV-Bench) |
+| VSI-Bench | [IffYuan/vsi-bench](https://huggingface.co/datasets/IffYuan/vsi-bench) |
+| EmbSpatial | [FlagEval/EmbSpatial-Bench](https://huggingface.co/datasets/FlagEval/EmbSpatial-Bench) |
+| PointBench | [IffYuan/PointBench](https://huggingface.co/datasets/IffYuan/PointBench) |
+| COSMOS | [IffYuan/COSMOS](https://huggingface.co/datasets/IffYuan/COSMOS) |
+| RoboVQA | [IffYuan/RoboVQA](https://huggingface.co/datasets/IffYuan/RoboVQA) |
+| VLABench | [VLABench/vlm_evaluation_v1.0](https://huggingface.co/datasets/VLABench/vlm_evaluation_v1.0) |
+| ERQA-PLUS | TODO |
+| 3DSRBench | [ccvl/3DSRBench](https://huggingface.co/datasets/ccvl/3DSRBench) |
+| ViewSpatial | TODO |
+| MindCube | [mll-lab-nu/MindCube](https://github.com/mll-lab-nu/MindCube) |
+| MMSI-Bench | [RunsenXu/MMSI-Bench](https://huggingface.co/datasets/RunsenXu/MMSI-Bench) |
+
 
 When the environment has network access, Hugging Face data is downloaded on first use. For offline reproduction, populate the cache in advance and set `HF_HOME`. Dataset licenses and access terms are governed by the respective upstream dataset owners.
 
