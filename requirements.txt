@@ -1,0 +1,15 @@
+vllm>=0.11.0
+transformers>=5.13.0
+qwen-vl-utils>=0.0.14
+torch
+accelerate
+numpy
+Pillow
+tqdm
+datasets
+opencv-python
+scipy
+sacrebleu
+openai
+pydantic
+decord
