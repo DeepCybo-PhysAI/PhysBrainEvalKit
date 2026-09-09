@@ -46,6 +46,29 @@ bash scripts/eval_qwen3vl.sh \
   --dry-run
 ```
 
+### Launcher parameters
+
+| Parameter | Meaning | Example value |
+|---|---|---|
+| `--model-path PATH` | Local Hugging Face model directory containing `config.json`, tokenizer/processor files, and weights. | `/models/Qwen3-VL-8B-Instruct` |
+| `--model-name NAME` | Identifier embedded in result filenames and metadata. | `qwen3-vl-8b-instruct` |
+| `--output-base DIR` | Directory for benchmark results, raw predictions, summaries, and scheduler state. | `/results/qwen3-vl-8b` |
+| `--backend hf` | Inference backend. The sharded launcher currently supports Hugging Face only. | `hf` |
+| `--gpus LIST` | GPU IDs, separated by commas or spaces. | `0,1,2,3` |
+| `--models-per-gpu N` | Number of resident model workers placed on each GPU. Lower this for larger checkpoints. | `2` |
+| `--cpu-per-worker N` | CPU cores assigned to each worker; must fit the host affinity budget. | `4` |
+| `--only LIST` | Run only the listed benchmarks. Names must match `benchmark_registry.py`. | `ERQA,PointBench` |
+| `--skip LIST` | Exclude listed benchmarks from the plan. | `VLABench,MMSI-Bench` |
+| `--run-id ID` | Persistent shard namespace. Reuse the same ID to resume unfinished shards. | `qwen3-vl-run-01` |
+| `--prompt-policy POLICY` | Select benchmark inputs: `original` uses original benchmark prompts where available; `internal` uses the kit defaults. | `original` |
+| `--mmsi-num-samples N` | Number of samples generated per MMSI-Bench item. | `1` |
+| `--mmsi-seed N` | Random seed for MMSI-Bench sampling. | `3407` |
+| `--mmsi-temperature FLOAT` | Sampling temperature used by MMSI-Bench. | `0.7` |
+| `--resume` | Skip complete benchmark bundles and reuse valid shard outputs. | (flag) |
+| `--debug` | Run the reduced debug mode supported by selected benchmark entry points. | (flag) |
+| `--dry-run` | Validate the model and print the selected plan without loading models or samples. | (flag) |
+| `--help` | Print command usage. | (flag) |
+
 Remove `--dry-run` to start the evaluation. For a first real run, add `--resume` so completed benchmark bundles can be reused after an interruption. `--resume` supports benchmark-level and shard-level resumption; to reuse unfinished shards, pass the same `--run-id` when restarting. Use `--only ERQA,PointBench` to run a subset, or `--skip VLABench` to skip a benchmark.
 
 The runner uses the Hugging Face backend. The model remains loaded throughout the benchmark sequence, and each worker processes an interleaved sample shard. An individual benchmark can also be run directly:
