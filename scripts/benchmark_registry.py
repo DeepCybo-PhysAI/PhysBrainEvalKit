@@ -73,7 +73,7 @@ def build_specs(project_root: Path, model_name: str) -> list[BenchmarkSpec]:
         spec("COSMOS", "eval_cosmos.py", "IffYuan/COSMOS", "train", f"logs/results/COSMOS_{model_name}.json", "--max_model_len", "20000"),
         spec(
             "RoboVQA", "eval_robovqa.py", str(robovqa_root), "local-16frames/train_explicit_style", f"logs/results/RoboVQA_{model_name}.json",
-            "--data_root", str(robovqa_root), "--prompt_policy", "train_explicit_style", "--system_prompt", "You are a helpful assistant.", "--expected_num_frames", "16", "--max_model_len", "10240", "--max_images_per_prompt", "16", "--max_tokens", "128", "--temperature", "0.0", "--top_p", "1.0", "--top_k", "-1", "--repetition_penalty", "1.05", "--presence_penalty", "0.0",
+            "--data_root", str(robovqa_root), "--system_prompt", "You are a helpful assistant.", "--expected_num_frames", "16", "--max_model_len", "10240", "--max_images_per_prompt", "16", "--max_tokens", "128", "--temperature", "0.0", "--top_p", "1.0", "--top_k", "-1", "--repetition_penalty", "1.05", "--presence_penalty", "0.0",
         ),
         spec(
             "VLABench", "eval_vlabench.py", "VLABench/vlm_evaluation_v1.0", "local", f"logs/results/VLABench_{model_name}_results.json",

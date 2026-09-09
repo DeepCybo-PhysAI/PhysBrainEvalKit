@@ -37,7 +37,7 @@ class RoboRefitDataset(BaseDataset):
         thinking_model: bool = False,
         data_root: Optional[str] = None,
         qa_jsonl: Optional[str] = None,
-        prompt_policy: str = "internal",
+        prompt_policy: str = "original",
     ):
         super().__init__(instruct_following)
         self.dataset_name = dataset_name

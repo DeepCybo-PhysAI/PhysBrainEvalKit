@@ -212,8 +212,7 @@ def _remove_cli_option(argv: list[str], option: str) -> list[str]:
 
 def effective_extra_args(spec: BenchmarkSpec, prompt_policy: str) -> list[str]:
     extra = list(spec.extra_args)
-    if prompt_policy == "original" and spec.name == "RoboVQA":
-        extra = _replace_cli_option(extra, "--prompt_policy", "raw")
+    if spec.name == "RoboVQA":
         extra = _remove_cli_option(extra, "--system_prompt")
     return extra
 
@@ -231,14 +230,12 @@ def benchmark_cli(
     ]
     if spec.name == "MMSI-Bench":
         argv.extend(["--temperature", str(getattr(_BENCHMARK_ARGS, "mmsi_temperature", 0.7)), "--top_p", "0.8", "--top_k", "20"])
-    if spec.name in PROMPT_SWITCH_BENCHMARKS:
-        argv.extend(["--prompt-policy", prompt_policy])
     return argv
 
 
 def effective_input_policy(spec: BenchmarkSpec, prompt_policy: str) -> str:
-    if prompt_policy == "internal":
-        return "internal"
+    if prompt_policy == "original":
+        return "original"
     if spec.name in ORIGINAL_INPUT_BENCHMARKS:
         return "original"
     return "internal_no_original_reference"
@@ -284,7 +281,6 @@ def build_manifest(args: argparse.Namespace, specs: list[BenchmarkSpec], backbon
         "cpu_threads_per_worker": args.cpu_threads,
         "gpu_layout": args.gpu_layout,
         "point_protocol": POINT_PROTOCOL,
-        "prompt_policy": args.prompt_policy,
         "original_prompt_source_commit": ORIGINAL_PROMPT_SOURCE_COMMIT,
         "debug": args.debug,
         "mmsi_num_samples": args.mmsi_num_samples,
@@ -296,7 +292,6 @@ def build_manifest(args: argparse.Namespace, specs: list[BenchmarkSpec], backbon
             "registry": sha256_file(Path(__file__).with_name("benchmark_registry.py")),
             "hf_engine": sha256_file(args.project_root / "core" / "hf_engine.py"),
             "point_metrics": sha256_file(args.project_root / "core" / "final_point_metrics.py"),
-            "prompt_policy": sha256_file(args.project_root / "benchmark" / "prompt_policy.py"),
         },
         "benchmarks": [
             {
@@ -305,8 +300,8 @@ def build_manifest(args: argparse.Namespace, specs: list[BenchmarkSpec], backbon
                 "dataset": spec.dataset,
                 "split": spec.split,
                 "result_json": spec.result_json,
-                "extra_args": effective_extra_args(spec, args.prompt_policy),
-                "input_policy": effective_input_policy(spec, args.prompt_policy),
+                "extra_args": effective_extra_args(spec, "original"),
+                "input_policy": effective_input_policy(spec, "original"),
             }
             for spec in specs
         ],
@@ -550,7 +545,7 @@ def run_entry(
             args.model_name,
             args.model_path,
             backbone,
-            args.prompt_policy,
+            "original",
         ),
     ]
     if args.debug:
@@ -577,7 +572,7 @@ def export_bundle(
         args.model_name,
         args.model_path,
         backbone,
-        args.prompt_policy,
+        "original",
     )
     if args.debug:
         cli.append("--debug")
@@ -599,8 +594,7 @@ def export_bundle(
         "cpu_threads_per_worker": args.cpu_threads,
         "scheduler": "qwen3vl_hf",
         "point_protocol": POINT_PROTOCOL,
-        "requested_prompt_policy": args.prompt_policy,
-        "input_policy": effective_input_policy(spec, args.prompt_policy),
+        "input_policy": effective_input_policy(spec, "original"),
         "original_prompt_source_commit": ORIGINAL_PROMPT_SOURCE_COMMIT,
     }
     subprocess.run(
@@ -659,15 +653,6 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--only", default="")
     parser.add_argument("--skip", default="Ego3D-Bench")
     parser.add_argument("--resume", action="store_true")
-    parser.add_argument(
-        "--prompt-policy",
-        choices=["internal", "original"],
-        default="internal",
-        help=(
-            "Use original EmbodiedEvalKit inputs where available; internal-only "
-            "benchmarks retain their current inputs. Parsing and metrics are unchanged."
-        ),
-    )
     parser.add_argument("--debug", action="store_true")
     parser.add_argument("--mmsi-num-samples", type=int, default=1)
     parser.add_argument("--mmsi-seed", type=int, default=3407)
@@ -699,7 +684,7 @@ def main() -> int:
             args.model_path,
             backbone,
             args.debug,
-            args.prompt_policy,
+            "original",
         )
         for spec in specs
     }

@@ -81,8 +81,7 @@ Before a full run, confirm that every local path needed by the selected benchmar
      --gpus 0,1 \
      --models-per-gpu 2 \
      --cpu-per-worker 4 \
-     --prompt-policy original \
-     --dry-run
+        --dry-run
    ```
 
 2. Review the printed benchmark list. Use `--only NAME1,NAME2` or `--skip NAME` when datasets are unavailable. The default plan contains 28 non-judge benchmarks and does not run API-judge workloads.
@@ -97,8 +96,7 @@ Before a full run, confirm that every local path needed by the selected benchmar
      --gpus 0,1 \
      --models-per-gpu 2 \
      --cpu-per-worker 4 \
-     --prompt-policy original \
-     --resume
+        --resume
    ```
 
 4. Keep the same `--run-id` when restarting an interrupted run and shard reuse is desired. A new run ID starts a new shard namespace.
@@ -134,7 +132,6 @@ python -m compileall -q benchmark core eval_*.py scripts
 python -m unittest discover -s tests -v
 ```
 
-If a test or benchmark cannot run because data, GPU, or an optional dependency is unavailable, report the exact missing prerequisite and preserve the generated dry-run output. Do not silently substitute a different dataset, model, metric, or prompt policy.
 
 ## Troubleshooting
 

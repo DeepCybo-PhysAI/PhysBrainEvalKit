@@ -1,7 +1,7 @@
 from typing import Final
 
 
-PROMPT_POLICIES: Final = ("internal", "original")
+PROMPT_POLICIES: Final = ("original",)
 ORIGINAL_PROMPT_SOURCE_COMMIT: Final = (
     "5ec3a60e03894ea5b9215127b47afaf39d969dae"
 )

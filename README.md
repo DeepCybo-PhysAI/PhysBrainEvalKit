@@ -42,7 +42,6 @@ bash scripts/eval_qwen3vl.sh \
   --gpus 0,1 \
   --models-per-gpu 2 \
   --cpu-per-worker 4 \
-  --prompt-policy original \
   --dry-run
 ```
 
@@ -60,7 +59,6 @@ bash scripts/eval_qwen3vl.sh \
 | `--only LIST` | Run only the listed benchmarks. Names must match `benchmark_registry.py`. | `ERQA,PointBench` |
 | `--skip LIST` | Exclude listed benchmarks from the plan. | `VLABench,MMSI-Bench` |
 | `--run-id ID` | Persistent shard namespace. Reuse the same ID to resume unfinished shards. | `qwen3-vl-run-01` |
-| `--prompt-policy POLICY` | Select benchmark inputs: `original` uses original benchmark prompts where available; `internal` uses the kit defaults. | `original` |
 | `--mmsi-num-samples N` | Number of samples generated per MMSI-Bench item. | `1` |
 | `--mmsi-seed N` | Random seed for MMSI-Bench sampling. | `3407` |
 | `--mmsi-temperature FLOAT` | Sampling temperature used by MMSI-Bench. | `0.7` |

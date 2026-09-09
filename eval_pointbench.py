@@ -39,7 +39,7 @@ def main(
         backbone=args.backbone,
         debug=args.debug,
         thinking_model=args.thinking_model,
-        prompt_policy=args.prompt_policy,
+        prompt_policy="original",
     )
     raw_dataset = dataset.load_dataset()
     if args.debug:
@@ -106,7 +106,6 @@ if __name__ == "__main__":
                         help="Inference backend override. Use 'hf' when vLLM is not compatible with the local CUDA driver.")
     parser.add_argument("--instruct_following", type=str, default=None, help="Instruction following prompt")
     parser.add_argument("--thinking_model", action="store_true", help="Enable thinking model mode (extract answer from <answer> tags)")
-    parser.add_argument("--prompt_policy", "--prompt-policy", dest="prompt_policy", choices=["internal", "original"], default="internal")
 
     # vLLM engine
     parser.add_argument("--tensor_parallel_size", type=int, default=2, help="Tensor parallel size (default: 2)")

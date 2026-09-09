@@ -25,7 +25,7 @@ def main(
     start_time = time.time()
     is_main_process = int(os.environ.get("RANK", "0")) == 0
     using_local_data = bool(args.data_root or args.qa_jsonl)
-    prompt_policy = args.prompt_policy or ("train_explicit_style" if using_local_data else "raw")
+    prompt_policy = "raw"
     system_prompt = args.system_prompt
     if using_local_data and prompt_policy == "train_explicit_style" and system_prompt is None:
         system_prompt = "You are a helpful assistant."
@@ -159,36 +159,5 @@ if __name__ == "__main__":
                         help="Local RoboVQA root containing qa.jsonl and frame paths")
     parser.add_argument("--qa_jsonl", "--qa-jsonl", dest="qa_jsonl", type=str, default=None,
                         help="Optional qa.jsonl path; relative frame paths use --data_root or its parent")
-    parser.add_argument("--prompt_policy", "--prompt-policy", dest="prompt_policy",
-                        choices=["raw", "train_explicit_style"], default=None,
-                        help="Defaults to train_explicit_style for local data and raw for Hugging Face data")
-    parser.add_argument("--system_prompt", "--system-prompt", dest="system_prompt", type=str, default=None)
-    parser.add_argument("--expected_num_frames", "--expected-num-frames",
-                        dest="expected_num_frames", type=int, default=None)
-    parser.add_argument("--debug", action="store_true", help="Debug mode (process first 20 samples only)")
+    parser.add_argument("--expected_num_frames", type=int, default=None, help="Expected number of frames per sample")
 
-    args = parser.parse_args()
-
-    # Dataset configuration
-    task_name = "RoboVQA"
-    dataset_name = "IffYuan/RoboVQA"
-    subset = None
-    split = "train"
-
-    model_path = args.model_path
-    model_name = args.model_name
-    
-    log_file_name = setup_logging(task_name, model_name)
-
-    instruct_following = args.instruct_following
-
-    main(
-        args=args,
-        task_name=task_name,
-        model_name=model_name,
-        model_path=model_path,
-        instruct_following=instruct_following,
-        dataset_name=dataset_name,
-        subset=subset,
-        split=split
-    )

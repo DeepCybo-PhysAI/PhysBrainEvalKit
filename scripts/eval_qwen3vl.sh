@@ -20,7 +20,6 @@ Options:
   --only LIST               Run only selected benchmarks.
   --skip LIST               Skip selected benchmarks. Ego3D is always absent from this plan.
   --run-id ID               Persistent shard namespace; reuse it for shard-level resume.
-  --prompt-policy POLICY    Input policy: internal or original-when-available. Default: internal.
   --resume                  Skip complete benchmark bundles and reuse valid shards.
   --debug                   Pass --debug to selected benchmark entry points.
   --dry-run                 Validate and print the plan without loading models.
@@ -41,7 +40,6 @@ ONLY_BENCHMARKS="${ONLY_BENCHMARKS:-}"
 SKIP_BENCHMARKS="${SKIP_BENCHMARKS:-Ego3D-Bench}"
 EVAL_BACKEND="${EVAL_BACKEND:-hf}"
 RUN_ID="${RUN_ID:-}"
-PROMPT_POLICY="${PROMPT_POLICY:-internal}"
 MMSI_NUM_SAMPLES="${MMSI_NUM_SAMPLES:-1}"
 MMSI_SEED="${MMSI_SEED:-3407}"
 MMSI_TEMPERATURE="${MMSI_TEMPERATURE:-0.7}"
@@ -71,8 +69,6 @@ while [[ $# -gt 0 ]]; do
     --skip=*) SKIP_BENCHMARKS="${1#*=}"; shift ;;
     --run-id) RUN_ID="${2:?--run-id requires a value}"; shift 2 ;;
     --run-id=*) RUN_ID="${1#*=}"; shift ;;
-    --prompt-policy) PROMPT_POLICY="${2:?--prompt-policy requires a value}"; shift 2 ;;
-    --prompt-policy=*) PROMPT_POLICY="${1#*=}"; shift ;;
     --mmsi-num-samples) MMSI_NUM_SAMPLES="${2:?--mmsi-num-samples requires a value}"; shift 2 ;;
     --mmsi-num-samples=*) MMSI_NUM_SAMPLES="${1#*=}"; shift ;;
     --mmsi-seed) MMSI_SEED="${2:?--mmsi-seed requires a value}"; shift 2 ;;
@@ -90,10 +86,6 @@ done
 PYTHON="${PYTHON:-python}"
 if [[ "$EVAL_BACKEND" != "hf" ]]; then
   echo "ERROR: persistent sharded evaluation currently supports --backend hf only" >&2
-  exit 2
-fi
-if [[ "$PROMPT_POLICY" != "internal" && "$PROMPT_POLICY" != "original" ]]; then
-  echo "ERROR: --prompt-policy must be internal or original" >&2
   exit 2
 fi
 if [[ -z "$MODEL_PATH" || ! -f "${MODEL_PATH}/config.json" ]]; then
@@ -182,7 +174,6 @@ COMMON_ARGS=(
   --gpu-layout "$GPU_LAYOUT_CSV"
   --cpu-threads "$CPU_PER_WORKER"
   --run-id "$RUN_ID"
-  --prompt-policy "$PROMPT_POLICY"
   --mmsi-num-samples "$MMSI_NUM_SAMPLES"
   --mmsi-seed "$MMSI_SEED"
   --mmsi-temperature "$MMSI_TEMPERATURE"
@@ -203,7 +194,6 @@ echo "CPU affinity budget: ${CPU_BUDGET}"
 echo "CPU per worker: ${CPU_PER_WORKER}"
 echo "Reserved worker CPU slots: $((WORLD_SIZE * CPU_PER_WORKER))"
 echo "Run ID: ${RUN_ID}"
-echo "Prompt policy: ${PROMPT_POLICY}"
 echo "Attempt ID: ${ATTEMPT_ID}"
 
 if [[ "$DRY_RUN" == "1" ]]; then

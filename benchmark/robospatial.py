@@ -43,7 +43,7 @@ class RoboSpatialDataset(BaseDataset):
         backbone: Optional[str] = None,
         debug: bool = False,
         thinking_model: bool = False,
-        prompt_policy: str = "internal",
+        prompt_policy: str = "original",
     ):
         super().__init__(instruct_following)
         self.dataset_name = dataset_name
