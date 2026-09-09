@@ -2,7 +2,7 @@
 
 PhysBrainEvalKit is an evaluation toolkit for spatial and embodied-intelligence benchmarks targeting vision-language models (VLMs). This clean release contains the benchmark adapters, a unified Hugging Face inference interface, the point-localization metrics protocol, and a resident-model sharded runner for community reproduction.
 
-## Installation
+## 🛠️ Installation
 
 ```bash
 cd /path/to/PhysBrainEvalKit
@@ -15,7 +15,7 @@ You may also use an existing PyTorch/Transformers environment. GPU evaluation re
 
 Download a Qwen3-VL checkpoint in Hugging Face format (for example, an official Qwen3-VL-Instruct release) before running evaluation. The path passed to `--model-path` must contain `config.json`, the tokenizer files, and the model weight files.
 
-## Data
+## 📦 Data
 
 Most benchmarks load automatically from Hugging Face Datasets. The benchmark names, dataset IDs, splits, and default arguments are listed in `scripts/benchmark_registry.py`. Some benchmarks require local files; prepare those datasets before running and set the relevant environment variables:
 
@@ -30,7 +30,7 @@ When the environment has network access, Hugging Face data is downloaded on firs
 
 The full launcher plan contains 28 benchmarks and excludes API-judge workloads. If you have not prepared all local datasets, use `--only` to run the benchmarks whose data is available. A dry run validates the model and prints the selected plan without loading dataset samples.
 
-## Evaluation
+## 🚀 Evaluation
 
 The model directory must be in Hugging Face format and contain `config.json`. Use a dry run to inspect the benchmark plan first:
 
@@ -61,16 +61,16 @@ Run `python eval_<benchmark>.py --help` for the complete options of each entry p
 
 The launcher loads one model process per worker. Set `--models-per-gpu` according to available GPU memory; lower it for larger checkpoints. `--cpu-per-worker` must fit the host CPU affinity budget.
 
-## Benchmarks and Metrics
+## 📊 Benchmarks and Metrics
 
 The benchmark plan is defined in `scripts/benchmark_registry.py`. Point-localization tasks use the unified protocol in `docs/final_point_metrics_protocol.md`. Evaluation outputs include raw predictions, per-sample results, and summaries for auditing and reproduction.
 
-## Directory Layout
+## 📁 Directory Layout
 
-- `benchmark/`: dataset adapters and benchmark implementations
-- `core/`: inference backends, media processing, shared metrics, and logging
-- `eval_*.py`: single-benchmark command-line entry points
-- `scripts/`: sharded runner, benchmark registry, and score aggregation
-- `docs/`: metrics protocols
+- 🧩 `benchmark/`: dataset adapters and benchmark implementations
+- ⚙️ `core/`: inference backends, media processing, shared metrics, and logging
+- ▶️ `eval_*.py`: single-benchmark command-line entry points
+- 📜 `scripts/`: sharded runner, benchmark registry, and score aggregation
+- 📚 `docs/`: metrics protocols
 
 This directory contains no model weights, dataset caches, evaluation results, runtime logs, or API keys.
