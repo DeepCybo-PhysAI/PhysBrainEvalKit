@@ -150,3 +150,14 @@ The benchmark plan is defined in `scripts/benchmark_registry.py`. Point-localiza
 - 📚 `docs/`: metrics protocols
 
 This directory contains no model weights, dataset caches, evaluation results, runtime logs, or API keys.
+
+## Citation
+
+```bibtex
+@misc{physbrainevalkit,
+    title={PhysBrainEvalKit},
+    author={DeepCybo Team},
+    year={2026},
+    url={https://github.com/DeepCybo-PhysAI/PhysBrainEvalKit}
+}
+```
