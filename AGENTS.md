@@ -68,7 +68,7 @@ export HF_DATASETS_CACHE=/data/huggingface/datasets
 
 Standard datasets use `datasets.load_dataset`. RoboVQA, VLABench, MindCube, and 3DSRBench resolve Hub snapshots automatically and require no dedicated path variables. Follow the README's download instructions to populate caches for offline use. A dry run does not download or validate dataset files. Set `HF_HUB_OFFLINE=1` and `HF_DATASETS_OFFLINE=1` only after the selected datasets are cached.
 
-RoboRefit uses its public Hugging Face dataset by default. Individual packaged-dataset entry points also accept explicit local paths for debugging.
+RoboRefit uses the public `VLyb/RoboRefit-corrected` Hugging Face snapshot by default. The snapshot contains `qa.jsonl`, `images/`, and `masks/`; the adapter resolves it from the Hugging Face cache automatically. Individual entry points also accept explicit local paths for debugging.
 
 ## Standard evaluation workflow
 

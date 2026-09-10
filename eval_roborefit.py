@@ -144,7 +144,7 @@ if __name__ == "__main__":
     parser.add_argument("--debug", action="store_true", help="Debug mode (process first 20 samples only)")
 
     # RoboRefit specific
-    parser.add_argument("--dataset_name", type=str, default="IffYuan/Roborefit", help="HF dataset name")
+    parser.add_argument("--dataset_name", type=str, default="VLyb/RoboRefit-corrected", help="HF dataset name or local snapshot path")
     parser.add_argument("--subset", type=str, default=None, help="Dataset subset (optional)")
     parser.add_argument("--split", type=str, default="test", help="Dataset split")
     parser.add_argument(

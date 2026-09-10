@@ -13,6 +13,7 @@ from unittest.mock import MagicMock, patch
 
 from PIL import Image
 from benchmark.mindcube import MindCubeDataset
+from benchmark.roborefit import RoboRefitDataset
 from benchmark.robovqa import RoboVQADataset
 from benchmark.threedsrbench import ThreeDSRBenchDataset
 from benchmark.vlabench import VLABenchDataset
@@ -42,6 +43,31 @@ class HubDatasetTests(unittest.TestCase):
                 rows = RoboVQADataset(expected_num_frames=1).load_dataset()
             self.assertEqual(rows[0]['images'][0]['member'], 'frames/0.png')
             self.assertEqual(rows[0]['images'][0]['type'], 'tar_image')
+
+    def test_roborefit_corrected_snapshot(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "images").mkdir()
+            (root / "masks").mkdir()
+            Image.new("RGB", (2, 2)).save(root / "images/hf_0000.png")
+            Image.new("L", (2, 2), color=255).save(root / "masks/hf_0000.png")
+            (root / "qa.jsonl").write_text(json.dumps({
+                "question_id": 0,
+                "question": "pick up the object",
+                "image_path": "images/hf_0000.png",
+                "mask_path": "masks/hf_0000.png",
+                "width": 2,
+                "height": 2,
+            }) + "\n")
+            with patch("huggingface_hub.snapshot_download", return_value=directory) as download:
+                rows = RoboRefitDataset(backbone="qwen3").load_dataset()
+            self.assertEqual(len(rows), 1)
+            self.assertEqual(rows[0]["image_path"], str(root / "images/hf_0000.png"))
+            self.assertEqual(rows[0]["mask_path"], str(root / "masks/hf_0000.png"))
+            download.assert_called_once_with(
+                repo_id="VLyb/RoboRefit-corrected",
+                repo_type="dataset",
+            )
 
     def test_mindcube_snapshot_relative_images(self):
         with tempfile.TemporaryDirectory() as directory:

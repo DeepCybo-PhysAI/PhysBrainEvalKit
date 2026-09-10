@@ -61,7 +61,7 @@ def build_specs(project_root: Path, model_name: str) -> list[BenchmarkSpec]:
         spec("Pixmo-Points", "eval_pixmo_points.py", "IffYuan/pixmo-points-eval", "train", f"logs/results/PixmoPoints_{model_name}.json", "--max_model_len", "10240", "--max_tokens", "4096"),
         spec("RoboAfford", "eval_roboafford.py", "Zray26/roboafford-eval", "test", f"logs/results/RoboAfford_{model_name}.json", "--max_model_len", "10240"),
         spec("PIOBench", "eval_pio.py", "IffYuan/PIO-Bench", "train", f"logs/results/PIO-Bench_{model_name}.json", "--max_model_len", "8196", "--max_tokens", "4096"),
-        spec("RoboRefit", "eval_roborefit.py", "IffYuan/Roborefit", "test", f"logs/results/RoboRefit_{model_name}.json", "--max_model_len", "10240"),
+        spec("RoboRefit", "eval_roborefit.py", "VLyb/RoboRefit-corrected", "test", f"logs/results/RoboRefit_{model_name}.json", "--dataset_name", "VLyb/RoboRefit-corrected", "--max_model_len", "10240"),
         spec("BLINK", "eval_blink.py", "BLINK-Benchmark/BLINK", "Counting+Relative_Depth+Spatial_Relation/val", f"logs/results/BLINK-Bench_{model_name}.json", "--max_model_len", "10240"),
         spec("CV-Bench", "eval_cvbench.py", "nyu-visionx/CV-Bench", "default/test", f"logs/results/CV-Bench_{model_name}.json", "--max_model_len", "10240"),
         spec("VSI-Bench", "eval_vsi_bench.py", "IffYuan/vsi-bench", "train", f"logs/results/VSI-Bench_{model_name}_results.json", "--max_model_len", "24000"),

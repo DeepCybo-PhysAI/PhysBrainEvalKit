@@ -14,6 +14,7 @@ from core.point_utils import (
     score_single_mask_sample,
     validate_mask_size,
 )
+from core.hf_data import resolve_snapshot
 
 from .base import BaseDataset
 from .prompt_policy import validate_prompt_policy
@@ -26,7 +27,7 @@ class RoboRefitDataset(BaseDataset):
 
     def __init__(
         self,
-        dataset_name: str = "IffYuan/Roborefit",
+        dataset_name: str = "VLyb/RoboRefit-corrected",
         subset: Optional[str] = None,
         split: str = "test",
         instruct_following: Optional[str] = None,
@@ -147,6 +148,15 @@ class RoboRefitDataset(BaseDataset):
 
     def load_dataset(self) -> Any:
         if self.data_root or self.qa_jsonl:
+            return self._load_local_dataset()
+
+        dataset_path = resolve_snapshot(self.dataset_name)
+        if dataset_path.is_file():
+            self.qa_jsonl = dataset_path
+            self.data_root = dataset_path.parent
+            return self._load_local_dataset()
+        if dataset_path.is_dir() and (dataset_path / "qa.jsonl").is_file():
+            self.data_root = dataset_path
             return self._load_local_dataset()
 
         logger.info("Dataset: %s, Split: %s", self.dataset_name, self.split)

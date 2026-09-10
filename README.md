@@ -57,7 +57,7 @@ The following public sources correspond to the benchmark plan. Hugging Face data
 | Pixmo-Points | [IffYuan/pixmo-points-eval](https://huggingface.co/datasets/IffYuan/pixmo-points-eval) |
 | RoboAfford | [Zray26/roboafford-eval](https://huggingface.co/datasets/Zray26/roboafford-eval) |
 | PIOBench | [IffYuan/PIO-Bench](https://huggingface.co/datasets/IffYuan/PIO-Bench) |
-| RoboRefit | [IffYuan/RoboRefit](https://huggingface.co/datasets/IffYuan/RoboRefit) |
+| RoboRefit | [VLyb/RoboRefit-corrected](https://huggingface.co/datasets/VLyb/RoboRefit-corrected) |
 | BLINK | [BLINK-Benchmark/BLINK](https://huggingface.co/datasets/BLINK-Benchmark/BLINK) |
 | CV-Bench | [nyu-visionx/CV-Bench](https://huggingface.co/datasets/nyu-visionx/CV-Bench) |
 | VSI-Bench | [IffYuan/vsi-bench](https://huggingface.co/datasets/IffYuan/vsi-bench) |
@@ -82,6 +82,8 @@ export HF_DATASETS_CACHE=/data/huggingface/datasets
 ```
 
 No manual dataset download command is required. Running the evaluation launcher downloads the selected datasets into the configured Hugging Face cache and reuses them on later runs.
+
+RoboRefit uses the public [VLyb/RoboRefit-corrected](https://huggingface.co/datasets/VLyb/RoboRefit-corrected) snapshot. It contains the corrected `qa.jsonl` manifest together with the `images/` and `masks/` directories required by the mask-based point evaluator, and is resolved from the same Hugging Face cache automatically.
 
 Use `--only` or `--skip` to select datasets available in your environment. A dry run validates the model configuration and CLI options and prints the plan; it does not download data or check dataset files. Dataset licenses and access terms are governed by their respective owners.
 
