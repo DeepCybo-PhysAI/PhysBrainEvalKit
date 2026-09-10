@@ -16,6 +16,7 @@ This file is the operational guide for coding agents (including Codex and Claude
 Run commands from the repository root. Use an existing compatible environment when available; otherwise create a local virtual environment:
 
 ```bash
+python3 --version  # Python 3.10+ (Python 3.11 recommended)
 python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install --upgrade pip

@@ -12,8 +12,11 @@ This project is based on and extends the open-source [EmbodiedEvalKit](https://g
 
 ## 🛠️ Installation
 
+Use Python 3.10 or newer. Python 3.11 is recommended and is the version used for validation.
+
 ```bash
 cd /path/to/PhysBrainEvalKit
+python --version  # Python 3.10+ (Python 3.11 recommended)
 python -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
