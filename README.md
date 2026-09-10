@@ -1,5 +1,9 @@
 # PhysBrainEvalKit
 
+<p align="center">
+  <img src="assets/physbrain-evalkit-banner.png" alt="PhysBrainEvalKit banner" width="100%">
+</p>
+
 PhysBrainEvalKit is an evaluation toolkit for spatial and embodied-intelligence benchmarks targeting vision-language models (VLMs). This release contains the benchmark adapters, a unified Hugging Face inference interface, the point-localization metrics protocol, and a resident-model sharded runner for community reproduction.
 
 This project is based on and extends the open-source [EmbodiedEvalKit](https://github.com/pickxiguapi/EmbodiedEvalKit) framework.
