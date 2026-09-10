@@ -11,6 +11,7 @@ from PIL import Image
 from tqdm import tqdm
 
 from .base import BaseDataset
+from core.hf_data import resolve_snapshot
 
 logger = logging.getLogger(__name__)
 
@@ -29,7 +30,7 @@ class MindCubeDataset(BaseDataset):
 
     def __init__(
         self,
-        dataset_name: str = "datasets/MindCube",
+        dataset_name: str = "VLyb/MindCube-TinyBench",
         subset: Optional[str] = None,
         split: str = "tinybench",
         instruct_following: Optional[str] = None,
@@ -54,7 +55,7 @@ class MindCubeDataset(BaseDataset):
         return "Please answer with only the option letter, such as A, B, C, or D."
 
     def _resolve_jsonl_path(self) -> Path:
-        dataset_path = Path(self.dataset_name)
+        dataset_path = resolve_snapshot(self.dataset_name)
         if dataset_path.is_file():
             self.data_root = dataset_path.parent.parent if dataset_path.parent.name == "raw" else dataset_path.parent
             return dataset_path

@@ -35,9 +35,6 @@ class BenchmarkSpec:
 
 def build_specs(project_root: Path, model_name: str) -> list[BenchmarkSpec]:
     """Return the current 28-benchmark plan (non-judge, excluding Ego3D)."""
-    data = project_root / "datasets"
-    robovqa_root = Path(__import__("os").environ.get("ROBOVQA_DATA_ROOT", str(data / "RoboVQA-16frames")))
-    vlabench_root = Path(__import__("os").environ.get("VLABENCH_DATASET_PATH", str(data / "VLABench" / "vlm_evaluation_v1.0")))
 
     def spec(
         name: str,
@@ -72,18 +69,18 @@ def build_specs(project_root: Path, model_name: str) -> list[BenchmarkSpec]:
         spec("PointBench", "eval_pointbench.py", "IffYuan/PointBench", "train", f"logs/results/PointBench_{model_name}.json", "--max_model_len", "20000", "--max_tokens", "4096"),
         spec("COSMOS", "eval_cosmos.py", "IffYuan/COSMOS", "train", f"logs/results/COSMOS_{model_name}.json", "--max_model_len", "20000"),
         spec(
-            "RoboVQA", "eval_robovqa.py", str(robovqa_root), "local-16frames/train_explicit_style", f"logs/results/RoboVQA_{model_name}.json",
-            "--data_root", str(robovqa_root), "--system_prompt", "You are a helpful assistant.", "--expected_num_frames", "16", "--max_model_len", "10240", "--max_images_per_prompt", "16", "--max_tokens", "128", "--temperature", "0.0", "--top_p", "1.0", "--top_k", "-1", "--repetition_penalty", "1.05", "--presence_penalty", "0.0",
+            "RoboVQA", "eval_robovqa.py", "VLyb/RoboVQA-16frames", "local-16frames/train_explicit_style", f"logs/results/RoboVQA_{model_name}.json",
+            "--dataset_name", "VLyb/RoboVQA-16frames", "--expected_num_frames", "16", "--max_model_len", "10240", "--max_images_per_prompt", "16", "--max_tokens", "128", "--temperature", "0.0", "--top_p", "1.0", "--top_k", "-1", "--repetition_penalty", "1.05", "--presence_penalty", "0.0",
         ),
         spec(
-            "VLABench", "eval_vlabench.py", "VLABench/vlm_evaluation_v1.0", "local", f"logs/results/VLABench_{model_name}_results.json",
-            "--max_model_len", "10240", "--max_images_per_prompt", "2", "--max_tokens", "512", "--dataset_path", str(vlabench_root), "--chunk_size", "100",
+            "VLABench", "eval_vlabench.py", "VLyb/VLABench", "local", f"logs/results/VLABench_{model_name}_results.json",
+            "--max_model_len", "10240", "--max_images_per_prompt", "2", "--max_tokens", "512", "--dataset_path", "VLyb/VLABench", "--chunk_size", "100",
         ),
-        spec("ERQA-PLUS", "eval_erqa_plus.py", str(data / "erqa-plus"), "train", f"logs/results/ERQA-PLUS_{model_name}.json", "--dataset_name", str(data / "erqa-plus"), "--split", "train", "--max_model_len", "20000", "--max_images_per_prompt", "16", "--max_tokens", "128"),
-        spec("3DSRBench", "eval_3dsrbench.py", str(data / "3DSRBench" / "3DSRBench" / "3dsrbench_v1_vlmevalkit_circular.tsv"), "test", f"logs/results/3DSRBench_{model_name}.json", "--dataset_name", str(data / "3DSRBench" / "3DSRBench" / "3dsrbench_v1_vlmevalkit_circular.tsv"), "--max_model_len", "10240", "--max_images_per_prompt", "1", "--max_tokens", "128"),
-        spec("ViewSpatial", "eval_viewspatial.py", str(data / "ViewSpatial_lmmseval"), "test", f"logs/results/ViewSpatial_{model_name}.json", "--dataset_name", str(data / "ViewSpatial_lmmseval"), "--max_model_len", "20000", "--max_images_per_prompt", "16", "--max_tokens", "128"),
-        spec("MindCube", "eval_mindcube.py", str(data / "MindCube"), "tinybench", f"logs/results/MindCube_{model_name}.json", "--dataset_name", str(data / "MindCube"), "--split", "tinybench", "--max_model_len", "20000", "--max_images_per_prompt", "4", "--max_tokens", "128"),
-        spec("MMSI-Bench", "eval_mmsi_bench.py", str(data / "MMSI-Bench"), "test", f"logs/results/MMSI-Bench_{model_name}.json", "--dataset_name", str(data / "MMSI-Bench"), "--split", "test", "--max_model_len", "20000", "--max_images_per_prompt", "10", "--max_tokens", "128"),
+        spec("ERQA-PLUS", "eval_erqa_plus.py", "huggingdas/erqa-plus", "train", f"logs/results/ERQA-PLUS_{model_name}.json", "--dataset_name", "huggingdas/erqa-plus", "--split", "train", "--max_model_len", "20000", "--max_images_per_prompt", "16", "--max_tokens", "128"),
+        spec("3DSRBench", "eval_3dsrbench.py", "VLyb/3DSRBench", "test", f"logs/results/3DSRBench_{model_name}.json", "--dataset_name", "VLyb/3DSRBench", "--max_model_len", "10240", "--max_images_per_prompt", "1", "--max_tokens", "128"),
+        spec("ViewSpatial", "eval_viewspatial.py", "lidingm/ViewSpatial-Bench", "test", f"logs/results/ViewSpatial_{model_name}.json", "--dataset_name", "lidingm/ViewSpatial-Bench", "--max_model_len", "20000", "--max_images_per_prompt", "16", "--max_tokens", "128"),
+        spec("MindCube", "eval_mindcube.py", "VLyb/MindCube-TinyBench", "tinybench", f"logs/results/MindCube_{model_name}.json", "--dataset_name", "VLyb/MindCube-TinyBench", "--split", "tinybench", "--max_model_len", "20000", "--max_images_per_prompt", "4", "--max_tokens", "128"),
+        spec("MMSI-Bench", "eval_mmsi_bench.py", "RunsenXu/MMSI-Bench", "test", f"logs/results/MMSI-Bench_{model_name}.json", "--dataset_name", "RunsenXu/MMSI-Bench", "--split", "test", "--max_model_len", "20000", "--max_images_per_prompt", "10", "--max_tokens", "128"),
     ]
 
 

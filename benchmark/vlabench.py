@@ -12,11 +12,11 @@ import networkx as nx
 from tqdm import tqdm
 
 from .base import BaseDataset
+from core.hf_data import resolve_snapshot
 
 warnings.filterwarnings("ignore")
 logger = logging.getLogger(__name__)
 
-DEFAULT_VLABENCH_DATASET_PATH = os.environ.get("VLABENCH_DATASET_PATH", "datasets/VLABench/vlm_evaluation_v1.0")
 
 def convert_to_str(value):
     return str(value) if value is not None else None
@@ -501,7 +501,7 @@ class VLABenchDataset(BaseDataset):
         thinking_model: bool = False
     ):
         super().__init__(instruct_following)
-        self.dataset_path = dataset_path or os.environ.get("VLABENCH_DATASET_PATH", DEFAULT_VLABENCH_DATASET_PATH)
+        self.dataset_path = dataset_path or "VLyb/VLABench"
         self.subset = subset
         self.task_name = task_name
         self.model_name = model_name
@@ -526,11 +526,12 @@ class VLABenchDataset(BaseDataset):
                 - output/
                   - operation_sequence.json
         """
+        self.dataset_path = str(resolve_snapshot(self.dataset_path))
         logger.info(f"Loading VLABench dataset from: {self.dataset_path}")
         if not self.dataset_path or not os.path.isdir(self.dataset_path):
             raise FileNotFoundError(
                 f"VLABench dataset directory not found: {self.dataset_path}. "
-                "Download VLABench/vlm_evaluation_v1.0 and set VLABENCH_DATASET_PATH "
+                "Use the VLyb/VLABench Hub dataset "
                 "or pass --dataset_path."
             )
         

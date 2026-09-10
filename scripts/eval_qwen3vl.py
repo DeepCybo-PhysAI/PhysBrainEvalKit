@@ -234,11 +234,8 @@ def benchmark_cli(
 
 
 def effective_input_policy(spec: BenchmarkSpec, prompt_policy: str) -> str:
-    if prompt_policy == "original":
-        return "original"
-    if spec.name in ORIGINAL_INPUT_BENCHMARKS:
-        return "original"
-    return "internal_no_original_reference"
+    """Return the public prompt policy used by every benchmark."""
+    return "original"
 
 
 def validate_cli_options(

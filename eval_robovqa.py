@@ -24,7 +24,7 @@ def main(
 ):
     start_time = time.time()
     is_main_process = int(os.environ.get("RANK", "0")) == 0
-    using_local_data = bool(args.data_root or args.qa_jsonl)
+    using_local_data = bool(args.data_root or args.qa_jsonl or dataset_name == "VLyb/RoboVQA-16frames")
     prompt_policy = "raw"
     system_prompt = args.system_prompt
     if using_local_data and prompt_policy == "train_explicit_style" and system_prompt is None:
@@ -161,3 +161,11 @@ if __name__ == "__main__":
                         help="Optional qa.jsonl path; relative frame paths use --data_root or its parent")
     parser.add_argument("--expected_num_frames", type=int, default=None, help="Expected number of frames per sample")
 
+    parser.add_argument("--dataset_name", default="VLyb/RoboVQA-16frames", help="Hub dataset ID or local packaged dataset directory")
+    parser.add_argument("--split", default="train")
+    parser.add_argument("--debug", action="store_true", help="Process the first 20 samples")
+    parser.add_argument("--system_prompt", default=None)
+    args = parser.parse_args()
+    setup_logging("RoboVQA", args.model_name)
+    main(args, "RoboVQA", args.model_name, args.model_path,
+         args.instruct_following, args.dataset_name, None, args.split)

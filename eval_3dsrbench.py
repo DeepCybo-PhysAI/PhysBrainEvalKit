@@ -109,7 +109,7 @@ if __name__ == "__main__":
     parser.add_argument("--max_tokens", type=int, default=4096, help="Maximum tokens to generate")
 
     parser.add_argument("--debug", action="store_true", help="Debug mode: process first 20 samples only")
-    parser.add_argument("--dataset_name", type=str, default="datasets/3DSRBench/3DSRBench/3dsrbench_v1_vlmevalkit_circular.tsv", help="Dataset path or HF dataset name")
+    parser.add_argument("--dataset_name", type=str, default="VLyb/3DSRBench", help="Dataset path or HF dataset name")
     parser.add_argument("--split", type=str, default="test", help="Dataset split")
 
     args = parser.parse_args()

@@ -58,16 +58,16 @@ Use an official or otherwise publicly redistributable Qwen3-VL checkpoint. Do no
 
 ## Dataset configuration
 
-Most benchmarks load from Hugging Face Datasets using the IDs and splits in `scripts/benchmark_registry.py`. Set these variables when local files are required:
+All 28 benchmarks in the default plan resolve public Hugging Face IDs. Configure the cache before starting Python:
 
 ```bash
-export ROBOVQA_DATA_ROOT=/path/to/RoboVQA-16frames
-export VLABENCH_DATASET_PATH=/path/to/VLABench/vlm_evaluation_v1.0
-export ROBOREFIT_DATA_ROOT=/path/to/RoboRefit-corrected
-export EGO3DBENCH_IMAGE_ROOT=/path/to/Ego3D-Bench/images
+export HF_HOME=/data/huggingface
+export HF_DATASETS_CACHE=/data/huggingface/datasets
 ```
 
-Before a full run, confirm that every local path needed by the selected benchmarks exists. If only part of the data is available, use `--only` to select supported benchmarks.
+Standard datasets use `datasets.load_dataset`. RoboVQA, VLABench, MindCube, and 3DSRBench resolve Hub snapshots automatically and require no dedicated path variables. Follow the README's download instructions to populate caches for offline use. A dry run does not download or validate dataset files. Set `HF_HUB_OFFLINE=1` and `HF_DATASETS_OFFLINE=1` only after the selected datasets are cached.
+
+Do not set `ROBOREFIT_DATA_ROOT` unless explicitly using a corrected local export. Ego3D requires separate local images and is outside the default plan. Individual packaged-dataset entry points also accept explicit local paths for debugging.
 
 ## Standard evaluation workflow
 
@@ -81,7 +81,7 @@ Before a full run, confirm that every local path needed by the selected benchmar
      --gpus 0,1 \
      --models-per-gpu 2 \
      --cpu-per-worker 4 \
-        --dry-run
+     --dry-run
    ```
 
 2. Review the printed benchmark list. Use `--only NAME1,NAME2` or `--skip NAME` when datasets are unavailable. The default plan contains 28 non-judge benchmarks and does not run API-judge workloads.
@@ -96,7 +96,7 @@ Before a full run, confirm that every local path needed by the selected benchmar
      --gpus 0,1 \
      --models-per-gpu 2 \
      --cpu-per-worker 4 \
-        --resume
+     --resume
    ```
 
 4. Keep the same `--run-id` when restarting an interrupted run and shard reuse is desired. A new run ID starts a new shard namespace.

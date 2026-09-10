@@ -12,10 +12,7 @@ os.environ['VLLM_WORKER_MULTIPROC_METHOD'] = 'spawn'
 
 logger = logging.getLogger(__name__)
 
-DEFAULT_ROBOREFIT_DATA_ROOT = os.environ.get(
-    "ROBOREFIT_DATA_ROOT",
-    "datasets/RoboRefit-corrected",
-)
+DEFAULT_ROBOREFIT_DATA_ROOT = os.environ.get("ROBOREFIT_DATA_ROOT")
 
 def main(
     args,
@@ -155,8 +152,8 @@ if __name__ == "__main__":
         type=str,
         default=DEFAULT_ROBOREFIT_DATA_ROOT,
         help=(
-            "Corrected RoboRefIt directory containing qa.jsonl, images, and masks. "
-            "Can also be set with ROBOREFIT_DATA_ROOT."
+            "Optional local corrected RoboRefit directory containing qa.jsonl, images, and masks. "
+            "When omitted, the public Hugging Face dataset is used."
         ),
     )
     parser.add_argument(

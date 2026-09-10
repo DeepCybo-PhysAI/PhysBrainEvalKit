@@ -219,11 +219,8 @@ if __name__ == "__main__":
     parser.add_argument(
         "--dataset_path",
         type=str,
-        default=os.environ.get(
-            "VLABENCH_DATASET_PATH",
-            os.environ.get("VLABENCH_DATASET_PATH", "datasets/VLABench/vlm_evaluation_v1.0"),
-        ),
-        help="Path to the VLABench vlm_evaluation_v1.0 dataset directory.",
+        default="VLyb/VLABench",
+        help="Hub dataset ID or local VLABench directory.",
     )
     parser.add_argument("--subset", type=str, nargs='+', default=None,
                         help="Specific dimension(s) to evaluate")

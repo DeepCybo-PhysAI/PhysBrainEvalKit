@@ -14,6 +14,7 @@ from PIL import Image
 from tqdm import tqdm
 
 from .base import BaseDataset
+from core.hf_data import resolve_snapshot
 
 logger = logging.getLogger(__name__)
 
@@ -36,7 +37,7 @@ class ThreeDSRBenchDataset(BaseDataset):
 
     def __init__(
         self,
-        dataset_name: str = "datasets/3DSRBench/3DSRBench/3dsrbench_v1_vlmevalkit_circular.tsv",
+        dataset_name: str = "VLyb/3DSRBench",
         subset: Optional[str] = None,
         split: str = "test",
         instruct_following: Optional[str] = None,
@@ -60,9 +61,12 @@ class ThreeDSRBenchDataset(BaseDataset):
         return "Please answer with only the option letter, such as A, B, C, or D."
 
     def load_dataset(self) -> List[Dict[str, str]]:
-        logger.info(f"Dataset TSV: {self.dataset_name}")
+        dataset_path = resolve_snapshot(self.dataset_name)
+        if dataset_path.is_dir():
+            dataset_path = dataset_path / "3dsrbench_v1_vlmevalkit_circular.tsv"
+        logger.info(f"Dataset TSV: {dataset_path}")
         csv.field_size_limit(sys.maxsize)
-        with open(self.dataset_name, "r", encoding="utf-8") as f:
+        with open(dataset_path, "r", encoding="utf-8") as f:
             dataset = list(csv.DictReader(f, delimiter="\t"))
         logger.info(f"Dataset loaded. Number of rows: {len(dataset)}")
         return dataset

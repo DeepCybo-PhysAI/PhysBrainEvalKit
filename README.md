@@ -19,18 +19,18 @@ Download a Qwen3-VL checkpoint in Hugging Face format (for example, an official 
 
 ## 📦 Data
 
-Most benchmarks load automatically from Hugging Face Datasets. The benchmark names, dataset IDs, splits, and default arguments are listed in `scripts/benchmark_registry.py`. Some benchmarks require local files; prepare those datasets before running and set the relevant environment variables:
+All 28 benchmarks in the default plan load from public Hugging Face repositories. Dataset IDs, splits, and arguments are listed in `scripts/benchmark_registry.py`. Choose writable cache locations before launching Python:
 
 ```bash
-export ROBOVQA_DATA_ROOT=/path/to/RoboVQA-16frames
-export VLABENCH_DATASET_PATH=/path/to/VLABench/vlm_evaluation_v1.0
-export ROBOREFIT_DATA_ROOT=/path/to/RoboRefit-corrected
-export EGO3DBENCH_IMAGE_ROOT=/path/to/Ego3D-Bench/images
+export HF_HOME=/data/huggingface
+export HF_DATASETS_CACHE=/data/huggingface/datasets
 ```
+
+No benchmark-specific path variables are required for the default plan. The first run downloads the selected datasets; later runs reuse cached files.
 
 ### Dataset sources
 
-The following public sources correspond to the benchmark plan. Follow each dataset repository's instructions for downloads, authentication, and preprocessing. Hugging Face datasets are cached automatically on first use. Entries marked as a local prepared export require materializing the dataset into the path supplied through the corresponding environment variable.
+The following public sources correspond to the benchmark plan. Hugging Face datasets are cached automatically on first use, including repositories with custom archives or directory layouts.
 
 | Benchmark | Dataset source |
 |---|---|
@@ -55,18 +55,53 @@ The following public sources correspond to the benchmark plan. Follow each datas
 | EmbSpatial | [FlagEval/EmbSpatial-Bench](https://huggingface.co/datasets/FlagEval/EmbSpatial-Bench) |
 | PointBench | [IffYuan/PointBench](https://huggingface.co/datasets/IffYuan/PointBench) |
 | COSMOS | [IffYuan/COSMOS](https://huggingface.co/datasets/IffYuan/COSMOS) |
-| RoboVQA | [IffYuan/RoboVQA](https://huggingface.co/datasets/IffYuan/RoboVQA) |
-| VLABench | [VLABench/vlm_evaluation_v1.0](https://huggingface.co/datasets/VLABench/vlm_evaluation_v1.0) |
-| ERQA-PLUS | TODO |
-| 3DSRBench | [ccvl/3DSRBench](https://huggingface.co/datasets/ccvl/3DSRBench) |
-| ViewSpatial | TODO |
-| MindCube | [mll-lab-nu/MindCube](https://github.com/mll-lab-nu/MindCube) |
+| RoboVQA | [VLyb/RoboVQA-16frames](https://huggingface.co/datasets/VLyb/RoboVQA-16frames) |
+| VLABench | [VLyb/VLABench](https://huggingface.co/datasets/VLyb/VLABench) |
+| ERQA-PLUS | [huggingdas/erqa-plus](https://huggingface.co/datasets/huggingdas/erqa-plus) |
+| 3DSRBench | [VLyb/3DSRBench](https://huggingface.co/datasets/VLyb/3DSRBench) |
+| ViewSpatial | [lidingm/ViewSpatial-Bench](https://huggingface.co/datasets/lidingm/ViewSpatial-Bench) |
+| MindCube | [VLyb/MindCube-TinyBench](https://huggingface.co/datasets/VLyb/MindCube-TinyBench) |
 | MMSI-Bench | [RunsenXu/MMSI-Bench](https://huggingface.co/datasets/RunsenXu/MMSI-Bench) |
 
+### Downloading and caching datasets
 
-When the environment has network access, Hugging Face data is downloaded on first use. For offline reproduction, populate the cache in advance and set `HF_HOME`. Dataset licenses and access terms are governed by the respective upstream dataset owners.
+`HF_HOME` controls the Hugging Face cache root, including Hub snapshots under `$HF_HOME/hub`. `HF_DATASETS_CACHE` controls the processed data cache used by `datasets`. Set both in the same shell or job script that launches evaluation. If `HF_HUB_CACHE` is already set in your environment, it overrides the Hub location derived from `HF_HOME`.
 
-The full launcher plan contains 28 benchmarks and excludes API-judge workloads. If you have not prepared all local datasets, use `--only` to run the benchmarks whose data is available. A dry run validates the model and prints the selected plan without loading dataset samples.
+| Dataset format | Loading behavior |
+|---|---|
+| Standard datasets, such as `FlagEval/ERQA` and `RunsenXu/MMSI-Bench` | `datasets.load_dataset` downloads the requested split and caches the processed data. |
+| `VLyb/RoboVQA-16frames`, `VLyb/VLABench`, `VLyb/MindCube-TinyBench`, `VLyb/3DSRBench` | The adapter downloads a Hub snapshot and reads the packaged files directly from the cache. RoboVQA reads `frames.tar` without extraction. |
+
+To pre-download the four packaged repositories into the same Hub cache, run the following after setting the cache variables above. Omit `--local-dir` so the downloads can be reused automatically:
+
+```bash
+hf download VLyb/RoboVQA-16frames --repo-type dataset
+hf download VLyb/VLABench --repo-type dataset
+hf download VLyb/MindCube-TinyBench --repo-type dataset
+hf download VLyb/3DSRBench --repo-type dataset
+```
+
+For standard datasets, populate the cache through `datasets.load_dataset` with the same dataset ID, configuration, and split as the registry. For example:
+
+```bash
+python - <<'PYDATA'
+from datasets import load_dataset
+load_dataset("FlagEval/ERQA", split="test")
+PYDATA
+```
+
+After all selected datasets have been cached, offline evaluation can use:
+
+```bash
+export HF_HUB_OFFLINE=1
+export HF_DATASETS_OFFLINE=1
+```
+
+A snapshot downloaded with `hf download --local-dir /some/path` is not automatically discovered by repository ID. For an existing local copy of a packaged dataset, invoke its individual entry point with `--data_root` (RoboVQA), `--dataset_path` (VLABench), or `--dataset_name` (MindCube and 3DSRBench). These optional arguments accept the downloaded directory; 3DSRBench also accepts the circular TSV file itself. The default sharded launcher uses the Hub IDs.
+
+RoboRefit uses its public dataset by default; `ROBOREFIT_DATA_ROOT` is only for an optional corrected local export. The separate Ego3D entry point requires `EGO3DBENCH_IMAGE_ROOT` and is excluded from the default 28-benchmark plan.
+
+Use `--only` or `--skip` to select datasets available in your environment. A dry run validates the model configuration and CLI options and prints the plan; it does not download data or check dataset files. Dataset licenses and access terms are governed by their respective owners.
 
 ## 🚀 Evaluation
 

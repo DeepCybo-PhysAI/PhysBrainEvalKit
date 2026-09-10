@@ -13,6 +13,7 @@ from datasets import load_dataset
 from tqdm import tqdm
 
 from .base import BaseDataset
+from core.hf_data import resolve_snapshot
 
 logger = logging.getLogger(__name__)
 
@@ -116,7 +117,7 @@ class RoboVQADataset(BaseDataset):
 
     def __init__(
         self,
-        dataset_name: str = "IffYuan/RoboVQA",
+        dataset_name: str = "VLyb/RoboVQA-16frames",
         subset: Optional[str] = None,
         split: str = "train",
         instruct_following: Optional[str] = None,
@@ -151,6 +152,11 @@ class RoboVQADataset(BaseDataset):
 
     def load_dataset(self) -> Any:
         """Load RoboVQA dataset from HuggingFace"""
+        if not self.data_root and not self.qa_jsonl and (
+            self.dataset_name == "VLyb/RoboVQA-16frames"
+            or Path(self.dataset_name).expanduser().is_dir()
+        ):
+            self.data_root = resolve_snapshot(self.dataset_name)
         if self.data_root or self.qa_jsonl:
             qa_path = self.qa_jsonl or self.data_root / "qa.jsonl"
             data_root = self.data_root or qa_path.parent

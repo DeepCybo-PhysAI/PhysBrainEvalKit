@@ -109,7 +109,7 @@ if __name__ == "__main__":
     parser.add_argument("--max_tokens", type=int, default=4096, help="Maximum tokens to generate")
 
     parser.add_argument("--debug", action="store_true", help="Debug mode: process first 20 samples only")
-    parser.add_argument("--dataset_name", type=str, default="datasets/MindCube", help="Dataset directory or jsonl path")
+    parser.add_argument("--dataset_name", type=str, default="VLyb/MindCube-TinyBench", help="Dataset directory or jsonl path")
     parser.add_argument("--split", type=str, default="tinybench", help="Dataset split: tinybench, full/default, train, or a jsonl filename")
 
     args = parser.parse_args()
