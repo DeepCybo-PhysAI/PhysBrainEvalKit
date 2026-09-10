@@ -72,16 +72,9 @@ Set the Hugging Face cache locations in the shell used for evaluation. The frame
 ```bash
 export HF_HOME=/data/huggingface
 export HF_DATASETS_CACHE=/data/huggingface/datasets
-
-hf download VLyb/RoboVQA-16frames --repo-type dataset
-hf download VLyb/VLABench --repo-type dataset
-hf download VLyb/MindCube-TinyBench --repo-type dataset
-hf download VLyb/3DSRBench --repo-type dataset
 ```
 
-The four commands above are optional; running the evaluation launcher is enough to trigger the same downloads. Do not use `--local-dir` for these commands, because the adapters resolve datasets by their Hugging Face IDs and read the shared cache.
-
-RoboRefit uses its public Hugging Face dataset by default. The default plan contains the 28 benchmarks listed above.
+No manual dataset download command is required. Running the evaluation launcher downloads the selected datasets into the configured Hugging Face cache and reuses them on later runs.
 
 Use `--only` or `--skip` to select datasets available in your environment. A dry run validates the model configuration and CLI options and prints the plan; it does not download data or check dataset files. Dataset licenses and access terms are governed by their respective owners.
 
