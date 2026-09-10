@@ -33,8 +33,9 @@ FP = P - TP
 FN = G - TP
 ```
 
-Report micro-averaged metrics after aggregation. The primary column, `Strict Overall`, is
-`strict_micro_f1`.
+Report micro-averaged metrics after aggregation. `strict_micro_f1` is retained as a
+diagnostic strict metric; point-localization benchmark summaries use the non-strict
+metric described below as their primary score.
 
 Special rules for an explicit empty answer:
 
@@ -51,7 +52,8 @@ f1 = harmonic_mean(precision, recall)
 ```
 
 Normally `H*=H`; for a PointBench counting mismatch, `H*=0`.
-The primary column, `Non-strict Overall`, is `non_strict_micro_f1`.
+For point-localization benchmark summaries, the primary metric is
+`non_strict_micro_f1`.
 
 Each sample must store sufficient statistics independently:
 
@@ -92,6 +94,9 @@ strict_overall = (122 * context_strict_micro_f1 + binary_correct) / 350
 non_strict_overall = (122 * context_non_strict_micro_f1 + binary_correct) / 350
 ```
 
+RoboSpatial uses `non_strict_overall_score` as its primary benchmark score. The
+strict mixed score remains available as `strict_overall_score` for diagnostics.
+
 ### RoboRefit
 
 Use all 2,000 corrected masks. Bounding boxes do not contribute to scoring. Do not exclude the three samples whose prompt and ground-truth question text differ.
@@ -118,4 +123,3 @@ python3 -m unittest \
   tests.test_point_protocol \
   tests.test_point_benchmarks
 ```
-
