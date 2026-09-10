@@ -148,7 +148,7 @@ The benchmark plan is defined in `scripts/benchmark_registry.py`. Point-localiza
 - 🧩 `benchmark/`: dataset adapters and benchmark implementations
 - ⚙️ `core/`: inference backends, media processing, shared metrics, and logging
 - ▶️ `eval_*.py`: single-benchmark command-line entry points
-- 📜 `scripts/`: sharded runner, benchmark registry, and score aggregation
+- 📜 `scripts/`: sharded runner, result-bundle exporter, benchmark registry, and score aggregation
 - 📚 `docs/`: metrics protocols
 
 This directory contains no model weights, dataset caches, evaluation results, runtime logs, or API keys.
