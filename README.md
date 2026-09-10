@@ -67,39 +67,19 @@ The following public sources correspond to the benchmark plan. Hugging Face data
 
 ### Downloading and caching datasets
 
-`HF_HOME` controls the Hugging Face cache root, including Hub snapshots under `$HF_HOME/hub`. `HF_DATASETS_CACHE` controls the processed data cache used by `datasets`. Set both in the same shell or job script that launches evaluation. If `HF_HUB_CACHE` is already set in your environment, it overrides the Hub location derived from `HF_HOME`.
-
-| Dataset format | Loading behavior |
-|---|---|
-| Standard datasets, such as `FlagEval/ERQA` and `RunsenXu/MMSI-Bench` | `datasets.load_dataset` downloads the requested split and caches the processed data. |
-| `VLyb/RoboVQA-16frames`, `VLyb/VLABench`, `VLyb/MindCube-TinyBench`, `VLyb/3DSRBench` | The adapter downloads a Hub snapshot and reads the packaged files directly from the cache. RoboVQA reads `frames.tar` without extraction. |
-
-To pre-download the four packaged repositories into the same Hub cache, run the following after setting the cache variables above. Omit `--local-dir` so the downloads can be reused automatically:
+Set the Hugging Face cache locations in the shell used for evaluation. The framework downloads all selected datasets there automatically on first use:
 
 ```bash
+export HF_HOME=/data/huggingface
+export HF_DATASETS_CACHE=/data/huggingface/datasets
+
 hf download VLyb/RoboVQA-16frames --repo-type dataset
 hf download VLyb/VLABench --repo-type dataset
 hf download VLyb/MindCube-TinyBench --repo-type dataset
 hf download VLyb/3DSRBench --repo-type dataset
 ```
 
-For standard datasets, populate the cache through `datasets.load_dataset` with the same dataset ID, configuration, and split as the registry. For example:
-
-```bash
-python - <<'PYDATA'
-from datasets import load_dataset
-load_dataset("FlagEval/ERQA", split="test")
-PYDATA
-```
-
-After all selected datasets have been cached, offline evaluation can use:
-
-```bash
-export HF_HUB_OFFLINE=1
-export HF_DATASETS_OFFLINE=1
-```
-
-A snapshot downloaded with `hf download --local-dir /some/path` is not automatically discovered by repository ID. For an existing local copy of a packaged dataset, invoke its individual entry point with `--data_root` (RoboVQA), `--dataset_path` (VLABench), or `--dataset_name` (MindCube and 3DSRBench). These optional arguments accept the downloaded directory; 3DSRBench also accepts the circular TSV file itself. The default sharded launcher uses the Hub IDs.
+The four commands above are optional; running the evaluation launcher is enough to trigger the same downloads. Do not use `--local-dir` for these commands, because the adapters resolve datasets by their Hugging Face IDs and read the shared cache.
 
 RoboRefit uses its public dataset by default; `ROBOREFIT_DATA_ROOT` is only for an optional corrected local export. The separate Ego3D entry point requires `EGO3DBENCH_IMAGE_ROOT` and is excluded from the default 28-benchmark plan.
 
