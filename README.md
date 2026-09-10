@@ -81,7 +81,7 @@ hf download VLyb/3DSRBench --repo-type dataset
 
 The four commands above are optional; running the evaluation launcher is enough to trigger the same downloads. Do not use `--local-dir` for these commands, because the adapters resolve datasets by their Hugging Face IDs and read the shared cache.
 
-RoboRefit uses its public dataset by default; `ROBOREFIT_DATA_ROOT` is only for an optional corrected local export. The separate Ego3D entry point requires `EGO3DBENCH_IMAGE_ROOT` and is excluded from the default 28-benchmark plan.
+RoboRefit uses its public Hugging Face dataset by default. The separate Ego3D entry point requires `EGO3DBENCH_IMAGE_ROOT` and is excluded from the default 28-benchmark plan.
 
 Use `--only` or `--skip` to select datasets available in your environment. A dry run validates the model configuration and CLI options and prints the plan; it does not download data or check dataset files. Dataset licenses and access terms are governed by their respective owners.
 

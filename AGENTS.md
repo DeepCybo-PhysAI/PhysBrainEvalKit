@@ -67,7 +67,7 @@ export HF_DATASETS_CACHE=/data/huggingface/datasets
 
 Standard datasets use `datasets.load_dataset`. RoboVQA, VLABench, MindCube, and 3DSRBench resolve Hub snapshots automatically and require no dedicated path variables. Follow the README's download instructions to populate caches for offline use. A dry run does not download or validate dataset files. Set `HF_HUB_OFFLINE=1` and `HF_DATASETS_OFFLINE=1` only after the selected datasets are cached.
 
-Do not set `ROBOREFIT_DATA_ROOT` unless explicitly using a corrected local export. Ego3D requires separate local images and is outside the default plan. Individual packaged-dataset entry points also accept explicit local paths for debugging.
+RoboRefit uses its public Hugging Face dataset by default. Ego3D requires separate local images and is outside the default plan. Individual packaged-dataset entry points also accept explicit local paths for debugging.
 
 ## Standard evaluation workflow
 
@@ -136,7 +136,7 @@ python -m unittest discover -s tests -v
 ## Troubleshooting
 
 - `--model-path must contain config.json`: pass the Hugging Face model directory, not a training-run parent directory.
-- Dataset or file-not-found errors: verify the dataset ID in `scripts/benchmark_registry.py`, check Hub connectivity, and confirm that `HF_HOME` and `HF_DATASETS_CACHE` are writable. Only the optional RoboRefit and Ego3D local exports use dedicated path variables.
+- Dataset or file-not-found errors: verify the dataset ID in `scripts/benchmark_registry.py`, check Hub connectivity, and confirm that `HF_HOME` and `HF_DATASETS_CACHE` are writable. Only the separate Ego3D entry point uses a dedicated local image path.
 - CUDA out-of-memory: reduce `--models-per-gpu`, use fewer GPUs/workers, or select a smaller Qwen3-VL checkpoint.
 - CPU affinity errors: reduce `--cpu-per-worker` or the number of workers.
 - Resume does not reuse shards: restart with the original `--run-id` and unchanged model, plan, and worker layout.
