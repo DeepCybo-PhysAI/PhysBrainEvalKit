@@ -136,10 +136,10 @@ python -m unittest discover -s tests -v
 ## Troubleshooting
 
 - `--model-path must contain config.json`: pass the Hugging Face model directory, not a training-run parent directory.
-- Dataset or file-not-found errors: set the corresponding environment variable and verify permissions and filenames.
+- Dataset or file-not-found errors: verify the dataset ID in `scripts/benchmark_registry.py`, check Hub connectivity, and confirm that `HF_HOME` and `HF_DATASETS_CACHE` are writable. Only the optional RoboRefit and Ego3D local exports use dedicated path variables.
 - CUDA out-of-memory: reduce `--models-per-gpu`, use fewer GPUs/workers, or select a smaller Qwen3-VL checkpoint.
 - CPU affinity errors: reduce `--cpu-per-worker` or the number of workers.
 - Resume does not reuse shards: restart with the original `--run-id` and unchanged model, plan, and worker layout.
-- Offline download errors: populate `HF_HOME` and all dataset caches before launching.
+- Offline download errors: populate both the processed dataset cache and Hub snapshot cache before launching, then set `HF_HUB_OFFLINE=1` and `HF_DATASETS_OFFLINE=1`.
 
 When reporting results, include the exact model identifier, benchmark selection, command-line arguments, dataset revision or source, software versions, and output directory. Avoid exposing credentials or private filesystem paths.
