@@ -4,6 +4,8 @@ PhysBrainEvalKit is an evaluation toolkit for spatial and embodied-intelligence 
 
 This project is based on and extends the open-source [EmbodiedEvalKit](https://github.com/pickxiguapi/EmbodiedEvalKit) framework.
 
+> 🤖 **For coding agents:** Before configuring the environment or running an evaluation, read [`AGENTS.md`](AGENTS.md). It contains the repository workflow, cache configuration, model requirements, evaluation commands, and validation steps for Codex, Claude Code, and other coding agents.
+
 ## 🛠️ Installation
 
 ```bash
