@@ -135,12 +135,12 @@ if __name__ == "__main__":
     parser.add_argument("--base_url", type=str, default=None, help="API base URL")
     
     # Sampling parameters
-    parser.add_argument("--temperature", type=float, default=0.7, help="Temperature (default: 0.7)")
-    parser.add_argument("--top_p", type=float, default=0.8, help="Top-p (default: 0.8)")
-    parser.add_argument("--top_k", type=int, default=20, help="Top-k (default: 20)")
+    parser.add_argument("--temperature", type=float, default=0.0, help="Temperature (default: 0.0)")
+    parser.add_argument("--top_p", type=float, default=1.0, help="Top-p (default: 1.0)")
+    parser.add_argument("--top_k", type=int, default=-1, help="Top-k (default: -1)")
     parser.add_argument("--repetition_penalty", type=float, default=1.05, help="Repetition penalty (default: 1.05)")
     parser.add_argument("--presence_penalty", type=float, default=0.0, help="Presence penalty (default: 0.0)")
-    parser.add_argument("--max_tokens", type=int, default=4096, help="Maximum tokens to generate (default: 4096)")
+    parser.add_argument("--max_tokens", type=int, default=1024, help="Maximum tokens to generate (default: 1024)")
 
     # Dataset
     parser.add_argument("--debug", action="store_true", help="Debug mode (process first 20 samples only)")

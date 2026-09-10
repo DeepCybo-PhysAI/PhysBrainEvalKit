@@ -139,6 +139,8 @@ Run `python eval_<benchmark>.py --help` for the complete options of each entry p
 
 The launcher loads one model process per worker. Set `--models-per-gpu` according to available GPU memory; lower it for larger checkpoints. `--cpu-per-worker` must fit the host CPU affinity budget.
 
+For reproducibility, the direct benchmark entry points and the persistent runner use greedy decoding by default: `temperature=0.0`, `top_p=1.0`, `top_k=-1`, and `seed=3407`. Benchmark-specific `max_tokens` defaults match the public plan in `scripts/benchmark_registry.py`. MMSI-Bench is the intentional exception: its runner explicitly enables temperature sampling through `--mmsi-temperature` and `--mmsi-seed`.
+
 ## 📊 Benchmarks and Metrics
 
 The benchmark plan is defined in `scripts/benchmark_registry.py`. Point-localization tasks use the unified protocol in `docs/final_point_metrics_protocol.md`. Evaluation outputs include raw predictions, per-sample results, and summaries for auditing and reproduction.

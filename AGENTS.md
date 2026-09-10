@@ -110,6 +110,8 @@ RoboRefit uses the public `VLyb/RoboRefit-corrected` Hugging Face snapshot by de
 
 The launcher keeps one Hugging Face model process resident per worker and divides samples into interleaved shards. Set `--models-per-gpu` conservatively for larger models. Ensure `world_size * cpu_per_worker` fits the process CPU affinity budget.
 
+The public evaluation plan uses deterministic greedy decoding by default: `temperature=0.0`, `top_p=1.0`, `top_k=-1`, `seed=3407`. Direct `eval_*.py` entry points use the same defaults, and their benchmark-specific `max_tokens` defaults match `scripts/benchmark_registry.py`. MMSI-Bench is intentionally sampled and is controlled separately by `--mmsi-temperature` and `--mmsi-seed`.
+
 ## Running one benchmark
 
 For focused debugging or a dataset-specific run, invoke an entry point directly from the repository root:

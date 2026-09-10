@@ -116,12 +116,12 @@ if __name__ == "__main__":
     parser.add_argument("--max_concurrent_requests", type=int, default=100, help="Max concurrent requests for API engine")
     parser.add_argument("--base_url", type=str, default=None, help="API base URL")
 
-    parser.add_argument("--temperature", type=float, default=0.7, help="Temperature")
-    parser.add_argument("--top_p", type=float, default=0.8, help="Top-p")
-    parser.add_argument("--top_k", type=int, default=20, help="Top-k")
+    parser.add_argument("--temperature", type=float, default=0.0, help="Temperature (default: 0.0)")
+    parser.add_argument("--top_p", type=float, default=1.0, help="Top-p (default: 1.0)")
+    parser.add_argument("--top_k", type=int, default=-1, help="Top-k (default: -1)")
     parser.add_argument("--repetition_penalty", type=float, default=1.05, help="Repetition penalty")
     parser.add_argument("--presence_penalty", type=float, default=0.0, help="Presence penalty")
-    parser.add_argument("--max_tokens", type=int, default=4096, help="Maximum tokens to generate")
+    parser.add_argument("--max_tokens", type=int, default=1024, help="Maximum tokens to generate (default: 1024)")
 
     parser.add_argument("--debug", action="store_true", help="Debug mode (process first 20 samples only)")
     parser.add_argument("--dataset_name", type=str, default="andrewliao11/Q-Spatial-Bench", help="HF dataset name")
