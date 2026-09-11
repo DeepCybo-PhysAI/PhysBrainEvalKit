@@ -26,7 +26,7 @@ You may also use an existing PyTorch/Transformers environment. GPU evaluation re
 
 > **About FlashAttention(FA)**: This evaluation project supports both FA2 and FA4. However, since the PhysBrain 1.5 model was trained on FA4, using FA4 for evaluation yields normal results, while using FA2 introduces minor fluctuations (within an acceptable range).
 
-Download a Qwen3-VL checkpoint in Hugging Face format (for example, an official Qwen3-VL-Instruct release) before running evaluation. The path passed to `--model-path` must contain `config.json`, the tokenizer files, and the model weight files.
+Download a [Qwen3-VL](https://huggingface.co/Qwen/Qwen3-VL-4B-Instruct) or [PhysBrain 1.5](https://huggingface.co/DeepCybo/PhysBrain1.5-8B) checkpoint in Hugging Face format before running evaluation. The path passed to `--model-path` must contain `config.json`, the tokenizer files, and the model weight files.
 
 ## 📦 Data
 
