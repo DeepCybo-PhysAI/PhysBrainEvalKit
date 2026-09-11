@@ -24,6 +24,8 @@ pip install -r requirements.txt
 
 You may also use an existing PyTorch/Transformers environment. GPU evaluation requires a PyTorch build compatible with your CUDA version. The sharded launcher also requires Bash, `taskset`, and `nvidia-smi`.
 
+> **About FlashAttention(FA)**: This evaluation project supports both FA2 and FA4. However, since the PhysBrain 1.5 model was trained on FA4, using FA4 for evaluation yields normal results, while using FA2 introduces minor fluctuations (within an acceptable range).
+
 Download a Qwen3-VL checkpoint in Hugging Face format (for example, an official Qwen3-VL-Instruct release) before running evaluation. The path passed to `--model-path` must contain `config.json`, the tokenizer files, and the model weight files.
 
 ## 📦 Data
@@ -82,10 +84,6 @@ export HF_DATASETS_CACHE=/data/huggingface/datasets
 ```
 
 No manual dataset download command is required. Running the evaluation launcher downloads the selected datasets into the configured Hugging Face cache and reuses them on later runs.
-
-RoboRefit uses the public [VLyb/RoboRefit-corrected](https://huggingface.co/datasets/VLyb/RoboRefit-corrected) snapshot. It contains the corrected `qa.jsonl` manifest together with the `images/` and `masks/` directories required by the mask-based point evaluator, and is resolved from the same Hugging Face cache automatically.
-
-ViewSpatial-Bench provides JSON annotations with `image_path` entries and stores the referenced images in `scannetv2_val.zip` and `val2017.zip`; the adapter resolves these archive members automatically from the Hugging Face snapshot.
 
 Use `--only` or `--skip` to select datasets available in your environment. A dry run validates the model configuration and CLI options and prints the plan; it does not download data or check dataset files. Dataset licenses and access terms are governed by their respective owners.
 
