@@ -85,6 +85,8 @@ No manual dataset download command is required. Running the evaluation launcher 
 
 RoboRefit uses the public [VLyb/RoboRefit-corrected](https://huggingface.co/datasets/VLyb/RoboRefit-corrected) snapshot. It contains the corrected `qa.jsonl` manifest together with the `images/` and `masks/` directories required by the mask-based point evaluator, and is resolved from the same Hugging Face cache automatically.
 
+ViewSpatial-Bench provides JSON annotations with `image_path` entries and stores the referenced images in `scannetv2_val.zip` and `val2017.zip`; the adapter resolves these archive members automatically from the Hugging Face snapshot.
+
 Use `--only` or `--skip` to select datasets available in your environment. A dry run validates the model configuration and CLI options and prints the plan; it does not download data or check dataset files. Dataset licenses and access terms are governed by their respective owners.
 
 ## 🚀 Evaluation

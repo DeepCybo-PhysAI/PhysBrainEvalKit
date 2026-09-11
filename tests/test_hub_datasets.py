@@ -17,6 +17,7 @@ from benchmark.roborefit import RoboRefitDataset
 from benchmark.robovqa import RoboVQADataset
 from benchmark.threedsrbench import ThreeDSRBenchDataset
 from benchmark.vlabench import VLABenchDataset
+from benchmark.viewspatial import ViewSpatialDataset
 from core.hf_data import resolve_snapshot
 
 
@@ -111,6 +112,33 @@ class HubDatasetTests(unittest.TestCase):
                 rows = VLABenchDataset(subset=['Spatial']).load_dataset()
             self.assertEqual(rows[0]['instruction'], 'Move the object.')
             self.assertEqual(rows[0]['input_image_path'], str(root / 'input/input.png'))
+
+    def test_viewspatial_json_snapshot_uses_zip_images(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "ViewSpatial-Bench.json").write_text(json.dumps([{
+                "question_type": "Camera perspective - Relative Direction",
+                "image_path": ["ViewSpatial-Bench/scannetv2_val/scene0011_00/original_images/0.jpg"],
+                "question": "Where is the object?",
+                "answer": "A. left",
+                "choices": "A. left\nB. right",
+            }]))
+            image_buffer = io.BytesIO()
+            Image.new("RGB", (2, 2), color="red").save(image_buffer, format="JPEG")
+            import zipfile
+            with zipfile.ZipFile(root / "scannetv2_val.zip", "w") as archive:
+                archive.writestr(
+                    "scannetv2_val/scene0011_00/original_images/0.jpg",
+                    image_buffer.getvalue(),
+                )
+            with patch("huggingface_hub.snapshot_download", return_value=directory):
+                dataset = ViewSpatialDataset()
+                prepared = dataset.prepare_dataset(dataset.load_dataset())
+            self.assertEqual(prepared[0]["image"][0]["type"], "zip_image")
+            self.assertEqual(
+                prepared[0]["image"][0]["member"],
+                "scannetv2_val/scene0011_00/original_images/0.jpg",
+            )
 
     def test_robovqa_cli_invokes_evaluation(self):
         inference = types.ModuleType('core.inference')

@@ -70,6 +70,8 @@ Standard datasets use `datasets.load_dataset`. RoboVQA, VLABench, MindCube, and 
 
 RoboRefit uses the public `VLyb/RoboRefit-corrected` Hugging Face snapshot by default. The snapshot contains `qa.jsonl`, `images/`, and `masks/`; the adapter resolves it from the Hugging Face cache automatically. Individual entry points also accept explicit local paths for debugging.
 
+ViewSpatial-Bench uses the public `lidingm/ViewSpatial-Bench` snapshot. Its annotations expose `image_path` rather than an `images` column, and the referenced files are stored in `scannetv2_val.zip` and `val2017.zip`; the adapter resolves these ZIP members automatically.
+
 ## Standard evaluation workflow
 
 1. Inspect the benchmark plan and validate command-line options without loading samples:

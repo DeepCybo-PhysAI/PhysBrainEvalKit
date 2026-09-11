@@ -3,6 +3,7 @@ import logging
 import re
 import tarfile
 import time
+import zipfile
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
@@ -213,6 +214,25 @@ class HFInferenceEngine:
                             raise ValueError(f"Image member not found: {archive_path}!{member_name}")
                         with member_file, Image.open(member_file) as image:
                             img = image.convert('RGB').copy()
+                    elif isinstance(img, dict) and img.get("type") == "zip_image":
+                        archive_path = img.get("archive")
+                        member_name = img.get("member")
+                        if not archive_path or not member_name:
+                            raise ValueError(f"Invalid zip image reference: {img}")
+                        archives = getattr(self, "_zip_image_archives", None)
+                        if archives is None:
+                            archives = self._zip_image_archives = {}
+                        archive = archives.get(archive_path)
+                        if archive is None:
+                            archive = archives[archive_path] = zipfile.ZipFile(archive_path, mode="r")
+                        try:
+                            member_file = archive.open(member_name, mode="r")
+                        except KeyError as exc:
+                            raise ValueError(
+                                f"Image member not found: {archive_path}!{member_name}"
+                            ) from exc
+                        with member_file, Image.open(member_file) as image:
+                            img = image.convert("RGB").copy()
                     elif isinstance(img, bytes):
                         with Image.open(io.BytesIO(img)) as image:
                             img = image.convert('RGB').copy()

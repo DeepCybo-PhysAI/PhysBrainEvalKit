@@ -3,22 +3,30 @@ import logging
 import os
 import re
 import textwrap
+from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 from datasets import load_dataset
 from tqdm import tqdm
 
 from .base import BaseDataset
+from core.hf_data import resolve_snapshot
 
 logger = logging.getLogger(__name__)
 
 
 class ViewSpatialDataset(BaseDataset):
-    """ViewSpatial-Bench dataset in lmms-eval HuggingFace parquet format."""
+    """ViewSpatial-Bench dataset in Hugging Face JSON or parquet format."""
+
+    JSON_FILE = "ViewSpatial-Bench.json"
+    ARCHIVE_FILES = {
+        "scannetv2_val": "scannetv2_val.zip",
+        "val2017": "val2017.zip",
+    }
 
     def __init__(
         self,
-        dataset_name: str = "datasets/ViewSpatial_lmmseval",
+        dataset_name: str = "lidingm/ViewSpatial-Bench",
         subset: Optional[str] = None,
         split: str = "test",
         instruct_following: Optional[str] = None,
@@ -37,37 +45,84 @@ class ViewSpatialDataset(BaseDataset):
         self.backbone = backbone
         self.debug = debug
         self.thinking_model = thinking_model
+        self.data_root: Optional[Path] = None
+        self._archive_members: Dict[Path, set[str]] = {}
 
     def get_default_instruct(self) -> str:
         return "Please answer with only the option letter, such as A, B, C, or D."
 
     def load_dataset(self) -> Any:
         logger.info(f"Dataset: {self.dataset_name}, Split: {self.split}")
+
+        dataset_path = Path(self.dataset_name).expanduser()
+        if dataset_path.is_dir() or (
+            not dataset_path.is_absolute()
+            and not dataset_path.exists()
+            and len(dataset_path.parts) == 2
+        ):
+            snapshot = resolve_snapshot(self.dataset_name)
+            json_path = snapshot / self.JSON_FILE
+            if json_path.is_file():
+                self.data_root = snapshot
+                with json_path.open("r", encoding="utf-8") as file:
+                    dataset = json.load(file)
+                if not isinstance(dataset, list):
+                    raise ValueError(f"Expected a list of samples in {json_path}")
+                logger.info(
+                    "Loaded ViewSpatial JSON dataset: %d samples from %s",
+                    len(dataset),
+                    json_path,
+                )
+                return dataset
+
+            parquet_paths = sorted((snapshot / "data").glob(f"{self.split}-*.parquet"))
+            if parquet_paths:
+                self.data_root = snapshot
+                data_files = {self.split: [str(path) for path in parquet_paths]}
+                dataset = load_dataset("parquet", data_files=data_files, split=self.split)
+                logger.info(f"Dataset parquet loaded. Number of samples: {len(dataset)}")
+                return dataset
+
         dataset = load_dataset(self.dataset_name, split=self.split)
         logger.info(f"Dataset loaded. Number of samples: {len(dataset)}")
         return dataset
 
     def prepare_dataset(self, dataset: Any) -> List[Dict[str, Any]]:
-        image_dataset = dataset.select_columns(["images"])
-        metadata_dataset = dataset.remove_columns(["images"])
+        # The older lmms-eval export includes decoded `images`; the public
+        # lidingm/ViewSpatial-Bench snapshot exposes only `image_path` and
+        # ships the source images in two ZIP archives.
+        column_names = set(getattr(dataset, "column_names", []) or [])
+        has_embedded_images = "images" in column_names
+        image_dataset = dataset.select_columns(["images"]) if has_embedded_images else None
+        metadata_dataset = dataset.remove_columns(["images"]) if has_embedded_images else dataset
         prepared_dataset = []
         for idx, sample in enumerate(metadata_dataset):
+            sample = dict(sample)
             question = textwrap.dedent(
                 f"{sample['question'].strip()}\n{sample['choices'].strip()}\n{self.instruct_following}"
             ).strip()
             answer = self.extract_answer_from_text(sample["answer"])
             image_paths = sample.get("image_path") or []
-            num_images = len(image_paths) if isinstance(image_paths, list) else 1
+            if isinstance(image_paths, str):
+                image_paths = [image_paths]
+            if not isinstance(image_paths, list):
+                image_paths = list(image_paths)
+            num_images = len(image_paths)
 
-            prepared_dataset.append({
-                "question": question,
-                "answer": answer,
-                "image": {
+            if has_embedded_images:
+                image = {
                     "__lazy_hf_images__": True,
                     "dataset": image_dataset,
                     "row_index": idx,
                     "column": "images",
-                },
+                }
+            else:
+                image = [self._resolve_image_reference(path) for path in image_paths]
+
+            prepared_dataset.append({
+                "question": question,
+                "answer": answer,
+                "image": image,
                 "metadata": {
                     "idx": idx,
                     "question_type": sample.get("question_type"),
@@ -78,6 +133,73 @@ class ViewSpatialDataset(BaseDataset):
                 },
             })
         return prepared_dataset
+
+    def _resolve_image_reference(self, image_path: Any) -> Any:
+        """Resolve a ViewSpatial image to a local path or ZIP member descriptor."""
+        path_text = str(image_path).strip().replace("\\", "/")
+        path = Path(path_text).expanduser()
+        if path.is_file():
+            return str(path.resolve())
+
+        if self.data_root is None:
+            raise FileNotFoundError(
+                f"Cannot resolve ViewSpatial image {image_path!r}: dataset root is unknown"
+            )
+
+        relative_path = path_text.lstrip("./")
+        direct_candidates = [
+            self.data_root / relative_path,
+            self.data_root / relative_path.removeprefix("ViewSpatial-Bench/"),
+        ]
+        for candidate in direct_candidates:
+            if candidate.is_file():
+                return str(candidate.resolve())
+
+        archive_key = next(
+            (key for key in self.ARCHIVE_FILES if f"/{key}/" in f"/{relative_path}/"),
+            None,
+        )
+        if archive_key is None:
+            raise FileNotFoundError(
+                f"ViewSpatial image path does not identify a known archive: {image_path!r}"
+            )
+
+        archive_path = self.data_root / self.ARCHIVE_FILES[archive_key]
+        if not archive_path.is_file():
+            raise FileNotFoundError(
+                f"ViewSpatial image archive is missing: {archive_path}. "
+                "Download the complete lidingm/ViewSpatial-Bench dataset snapshot."
+            )
+
+        import zipfile
+
+        members = self._archive_members.get(archive_path)
+        if members is None:
+            with zipfile.ZipFile(archive_path) as archive:
+                members = set(archive.namelist())
+            self._archive_members[archive_path] = members
+
+        candidates = [
+            relative_path,
+            relative_path.removeprefix("ViewSpatial-Bench/"),
+        ]
+        member_name = next((candidate for candidate in candidates if candidate in members), None)
+        if member_name is None:
+            suffixes = tuple(f"/{candidate}" for candidate in candidates)
+            matches = [member for member in members if member.endswith(suffixes)]
+            if len(matches) == 1:
+                member_name = matches[0]
+
+        if member_name is None:
+            raise FileNotFoundError(
+                f"ViewSpatial image is not present in {archive_path}: {image_path!r}"
+            )
+
+        return {
+            "type": "zip_image",
+            "archive": str(archive_path.resolve()),
+            "member": member_name,
+        }
 
     @staticmethod
     def extract_answer_from_text(text: str) -> Optional[str]:
